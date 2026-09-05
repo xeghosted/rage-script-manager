@@ -1,0 +1,14 @@
+.vscode/**
+.github/**
+node_modules/**
+src/**
+tsconfig.json
+run-tests.js
+.gitignore
+*.vsix
+
+# The compiled tests. Excluding *.test.ts is not enough: what ships is out/,
+# so it is the .js that has to be named. They were in the first package built.
+out/**/*.test.js
+out/**/*.test.js.map
+**/*.map

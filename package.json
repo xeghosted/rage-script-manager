@@ -1,0 +1,187 @@
+{
+  "name": "rage-script-manager",
+  "displayName": "RAGE Script Manager",
+  "description": "Write, push and run Lua on a jailbroken PS4 without restarting the game. Talks to the GTALua and RDR2Lua GoldHEN plugins over their control channel.",
+  "version": "0.1.0",
+  "publisher": "xeghosted",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xeghosted/rage-script-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xeghosted/rage-script-manager/issues"
+  },
+  "homepage": "https://github.com/xeghosted/rage-script-manager#readme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers",
+    "Other"
+  ],
+  "keywords": [
+    "ps4",
+    "goldhen",
+    "lua",
+    "rage",
+    "gta v",
+    "red dead redemption 2",
+    "modding",
+    "homebrew"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onLanguage:lua"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "RAGE Script Manager",
+      "properties": {
+        "rageScriptManager.host": {
+          "type": "string",
+          "default": "10.10.10.235",
+          "description": "Console IP address or hostname."
+        },
+        "rageScriptManager.port": {
+          "type": "number",
+          "default": 9615,
+          "description": "Control-channel port. GTALua listens on 9615, RDR2Lua on 9616 - set this per workspace so one editor window talks to the game that workspace belongs to."
+        },
+        "rageScriptManager.token": {
+          "type": "string",
+          "default": "",
+          "description": "Shared secret, matching the plugin's token file on the console. Leave empty when the console has no token file; the channel is then unauthenticated."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "rageScriptManager.connect",
+        "title": "Connect",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.disconnect",
+        "title": "Disconnect",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.pushReload",
+        "title": "Push & Restart",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.runFile",
+        "title": "Run Current File",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.showLog",
+        "title": "Show Log",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.startResource",
+        "title": "Start Resource",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.stopResource",
+        "title": "Stop Resource",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.restartResource",
+        "title": "Restart Resource",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.refreshResources",
+        "title": "Refresh Resources",
+        "icon": "$(refresh)",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.deployPlugin",
+        "title": "Deploy Plugin (.prx)",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.newResource",
+        "title": "New Resource",
+        "category": "RAGE"
+      },
+      {
+        "command": "rageScriptManager.openConsole",
+        "title": "Open Console",
+        "category": "RAGE"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "rageScriptManager.pushReload",
+        "key": "ctrl+alt+r",
+        "when": "editorLangId == lua"
+      },
+      {
+        "command": "rageScriptManager.runFile",
+        "key": "ctrl+alt+enter",
+        "when": "editorLangId == lua"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "rageScriptManagerResources",
+          "name": "RAGE Resources"
+        }
+      ]
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "rageScriptManager.startResource",
+          "when": "view == rageScriptManagerResources && viewItem != rageScriptManagerTruncated",
+          "group": "inline"
+        },
+        {
+          "command": "rageScriptManager.stopResource",
+          "when": "view == rageScriptManagerResources && viewItem != rageScriptManagerTruncated"
+        },
+        {
+          "command": "rageScriptManager.restartResource",
+          "when": "view == rageScriptManagerResources && viewItem != rageScriptManagerTruncated"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "rageScriptManager.refreshResources",
+          "when": "view == rageScriptManagerResources",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node run-tests.js",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  },
+  "extensionDependencies": [
+    "sumneko.lua"
+  ]
+}

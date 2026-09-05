@@ -1,0 +1,45 @@
+{
+    // Press F5 with THIS folder (editor/) open as the workspace root — the
+    // paths below are relative to it, so opening the repo root instead makes
+    // VS Code load an extension that isn't there and fail silently.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run RAGE Script Manager Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                // The repo root, opened AS THE DEV HOST'S FOLDER. Not a
+                // convenience: without a workspace folder the extension is
+                // half dead and says nothing about it. localFileFor() resolves
+                // a console chunk name by joining it onto each workspace
+                // folder, so with none open every diagnostic is silently
+                // dropped -- an error squiggle that simply never appears. The
+                // repo-root .luarc.json goes with it ("workspace.library":
+                // ["editor/lua-defs"] is relative to the workspace root), so
+                // every resource-API global reads as undefined too.
+                //
+                // It is the ROOT and not "${workspaceFolder}" because the two
+                // must differ: VS Code refuses to open one folder as the root
+                // of two windows and hands you a folderless dev host instead.
+                // That is what defeats .vscode/launch.json at the repo root --
+                // launching from the root asks for the root, and gets nothing.
+                // Launch from editor/, and the folder it asks for is free.
+                //
+                // NOT YET VERIFIED. Added on 2026-09-03 after the folderless
+                // dev host cost most of a session; the pass that followed used
+                // File > Add Folder to Workspace instead, so nobody has yet
+                // pressed F5 from editor/ and watched this arrive. If it does
+                // not, say so here rather than leaving the promise standing --
+                // an untested fix that looks done is the exact failure this
+                // whole session kept finding.
+                "${workspaceFolder}/.."
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/**/*.js"
+            ],
+            "preLaunchTask": "npm: compile"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+name: build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm run compile
+      - run: node run-tests.js
+
+  package:
+    # Packaging is where a broken manifest shows up -- a missing icon, a
+    # publisher that is not set, a .vscodeignore that ships src/. Building the
+    # .vsix on every push means that is caught here rather than at publish time.
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npx --yes @vscode/vsce package --no-git-tag-version --out rage-script-manager.vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: rage-script-manager.vsix

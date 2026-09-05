@@ -1,0 +1,18 @@
+{
+    // launch.json runs "npm: compile" before starting the extension host, so a
+    // stale out/ can never be what gets loaded. That has already caused one
+    // false test pass in this project; it is not going to cause a false F5 too.
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "compile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$tsc",
+            "label": "npm: compile"
+        }
+    ]
+}
