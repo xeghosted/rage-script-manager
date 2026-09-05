@@ -1,6 +1,6 @@
 {
-  "vendored_from": "VENDORED COPY. The authoritative version lives in the plugin projects (GTALua/tests/protocol_vectors.json, RDR2Lua/tests/protocol_vectors.json), where the C++ codec asserts against it too. This is one half of a two-sided wire contract: if the plugin changes the framing, this file has to be updated here as well or the extension will agree only with its own copy.",
-  "comment": "Shared wire fixtures. Both the C++ codec (tests/net_test.cpp) and the VS Code client (editor/src/protocol.ts) assert against these.",
+  "vendored_from": "VENDORED COPY. The authoritative version lives in the plugin project (Luma/tests/protocol_vectors.json), where the C++ codec asserts against it too. This is one half of a two-sided wire contract: if the plugin changes the framing, this file has to be updated here as well or the extension will agree only with its own copy.",
+  "comment": "Shared wire fixtures. Both the C++ codec (Luma/tests/net_test.cpp) and this extension (src/protocol.ts) assert against these.",
   "header_size": 12,
   "max_payload": 8388608,
   "resource_name_max_comment": "The longest resource name the lifecycle ops (START/STOP/RESTART/RESINFO) can carry, in bytes; their handlers decode it into a fixed buffer of this size plus a NUL. The runtime's own valid_name() enforces the SAME number, so a name the wire cannot act on is never listed as startable either -- a 183-character directory used to be advertised by RESLIST as 'stopped' while all four ops answered 'payload too long'. tests/net_test.cpp asserts net::RESOURCE_NAME_MAX against this number and tests/lua/resource_test.lua asserts valid_name's limit against it, so the two cannot drift apart.",

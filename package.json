@@ -1,8 +1,8 @@
 {
   "name": "rage-script-manager",
   "displayName": "RAGE Script Manager",
-  "description": "VS Code client for the GTALua and RDR2Lua scripting hosts. Connect over TCP, push Lua files, run a buffer, stream the log and manage resources without restarting the host application.",
-  "version": "0.1.1",
+  "description": "VS Code client for the Luma scripting host. Connect over TCP, push Lua files, run a buffer, stream the log and manage resources without restarting the host application.",
+  "version": "0.1.2",
   "publisher": "DominikHeise",
   "license": "MIT",
   "icon": "icon.png",
@@ -50,7 +50,7 @@
         "rageScriptManager.port": {
           "type": "number",
           "default": 9615,
-          "description": "Control-channel port. GTALua listens on 9615, RDR2Lua on 9616 - set this per workspace so one editor window talks to the game that workspace belongs to."
+          "description": "Control-channel port. Luma listens on 9615 for Grand Theft Auto V and 9616 for Red Dead Redemption 2 - set this per workspace so one editor window talks to the game that workspace belongs to."
         },
         "rageScriptManager.token": {
           "type": "string",

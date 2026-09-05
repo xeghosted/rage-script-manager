@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.2
+
+Documentation only; no behaviour changed.
+
+- The two plugins this extension talks to became one. GTALua and RDR2Lua were
+  merged into a single plugin, Luma, which detects the game it was loaded into
+  and picks that game's data root and port. The README described two plugins
+  and named them, which no longer matches anything a user can deploy.
+- The port setting's help text names the games rather than the old plugin
+  names, since the port is now the only thing that distinguishes them.
+
 ## 0.1.1
 
 - **The `host` setting no longer defaults to the author's own console.** It

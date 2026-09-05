@@ -7,25 +7,27 @@ The editor talks to a GoldHEN plugin over its control channel. Save a file, pres
 `Ctrl+Alt+R`, and the script is on the console and running before you have let go
 of the key. Errors come back as squiggles on the line that raised them.
 
-**This extension is only the editor half.** It needs one of the plugins running
-on the console:
+**This extension is only the editor half.** It needs the Luma plugin running on
+the console. Luma is a single plugin that serves both games, listening on a
+different port for each:
 
-| Game | Plugin | Port |
-| --- | --- | --- |
-| Grand Theft Auto V (CUSA00411 v1.57) | GTALua | 9615 |
-| Red Dead Redemption 2 (CUSA03041 v1.32) | RDR2Lua | 9616 |
+| Game | Port |
+| --- | --- |
+| Grand Theft Auto V (CUSA00411 v1.57) | 9615 |
+| Red Dead Redemption 2 (CUSA03041 v1.32) | 9616 |
 
-The plugins are a separate project from this extension and are not published
-yet, so there is nothing to link to.  Without one of them running on the
-console there is nothing for this extension to talk to.
+The plugin is a separate project from this extension and is not published yet,
+so there is nothing to link to. Without it running on the console there is
+nothing for this extension to talk to.
 
-One extension serves both. It speaks the protocol and sends relative paths; the
-plugin resolves them under its own data root, so nothing here is game-specific
+One extension serves both games for the same reason one plugin does: it speaks
+the protocol and sends relative paths, and the plugin resolves them under
+whichever game's data root it detected at boot. Nothing here is game-specific
 except the port you point it at.
 
 ## Getting started
 
-1. Deploy the plugin for your game and start it (see that project's README).
+1. Deploy the plugin and start the game (see that project's README).
 2. Set `rageScriptManager.host` to your console's IP, and `rageScriptManager.port`
    to the port from the table above. Both are workspace settings, so a GTA V
    workspace and an RDR2 workspace can sit open side by side.
@@ -56,7 +58,7 @@ else goes to `scripts/` and reloads the script directory.
 | Setting | Default | |
 | --- | --- | --- |
 | `rageScriptManager.host` | *(empty)* | Console IP or hostname — you must set this |
-| `rageScriptManager.port` | `9615` | 9615 for GTALua, 9616 for RDR2Lua |
+| `rageScriptManager.port` | `9615` | 9615 for GTA V, 9616 for RDR2 |
 | `rageScriptManager.token` | *(empty)* | Shared secret, if the console has a token file |
 
 ## Two things worth knowing
