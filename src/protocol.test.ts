@@ -11,7 +11,7 @@ function check(ok: boolean, what: string) {
     if (!ok) { failures++; }
 }
 
-const vectorsPath = path.join(__dirname, '..', '..', 'tests', 'protocol_vectors.json');
+const vectorsPath = path.join(__dirname, '..', 'test-fixtures', 'protocol_vectors.json');
 const fixtures = JSON.parse(fs.readFileSync(vectorsPath, 'utf8'));
 
 check(fixtures.header_size === HEADER_SIZE, 'header size agrees with the fixture file');
