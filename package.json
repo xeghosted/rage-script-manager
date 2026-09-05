@@ -3,7 +3,7 @@
   "displayName": "RAGE Script Manager",
   "description": "Write, push and run Lua on a jailbroken PS4 without restarting the game. Talks to the GTALua and RDR2Lua GoldHEN plugins over their control channel.",
   "version": "0.1.0",
-  "publisher": "xeghosted",
+  "publisher": "DominikHeise",
   "license": "MIT",
   "icon": "icon.png",
   "repository": {
