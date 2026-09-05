@@ -16,9 +16,11 @@ different port for each:
 | Grand Theft Auto V (CUSA00411 v1.57) | 9615 |
 | Red Dead Redemption 2 (CUSA03041 v1.32) | 9616 |
 
-The plugin is a separate project from this extension and is not published yet,
-so there is nothing to link to. Without it running on the console there is
-nothing for this extension to talk to.
+Luma is a separate project: **[source](https://github.com/xeghosted/luma)** ·
+**[documentation](https://xeghosted.github.io/luma/)**. Without it running on
+the console there is nothing for this extension to talk to; its
+[install guide](https://xeghosted.github.io/luma/install.html) is the place to
+start.
 
 One extension serves both games for the same reason one plugin does: it speaks
 the protocol and sends relative paths, and the plugin resolves them under
@@ -27,7 +29,8 @@ except the port you point it at.
 
 ## Getting started
 
-1. Deploy the plugin and start the game (see that project's README).
+1. Deploy the plugin and start the game — see
+   [Luma's install guide](https://xeghosted.github.io/luma/install.html).
 2. Set `rageScriptManager.host` to your console's IP, and `rageScriptManager.port`
    to the port from the table above. Both are workspace settings, so a GTA V
    workspace and an RDR2 workspace can sit open side by side.

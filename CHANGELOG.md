@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3
+
+Documentation only; no behaviour changed.
+
+- Luma, the plugin this extension drives, is public. The README said there was
+  nothing to link to, which was true when it was written and is the one thing a
+  reader most needs now that it is not: without the plugin, this extension has
+  nothing to talk to. It links to the source and the documentation instead.
+
 ## 0.1.2
 
 Documentation only; no behaviour changed.
