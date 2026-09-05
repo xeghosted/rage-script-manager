@@ -1,7 +1,7 @@
 {
   "name": "rage-script-manager",
   "displayName": "RAGE Script Manager",
-  "description": "Write, push and run Lua on a jailbroken PS4 without restarting the game. Talks to the GTALua and RDR2Lua GoldHEN plugins over their control channel.",
+  "description": "VS Code client for the GTALua and RDR2Lua scripting hosts. Connect over TCP, push Lua files, run a buffer, stream the log and manage resources without restarting the host application.",
   "version": "0.1.0",
   "publisher": "DominikHeise",
   "license": "MIT",
@@ -23,14 +23,12 @@
     "Other"
   ],
   "keywords": [
-    "ps4",
-    "goldhen",
     "lua",
-    "rage",
-    "gta v",
-    "red dead redemption 2",
-    "modding",
-    "homebrew"
+    "remote development",
+    "game scripting",
+    "rage engine",
+    "tcp",
+    "repl"
   ],
   "galleryBanner": {
     "color": "#1e1e1e",
