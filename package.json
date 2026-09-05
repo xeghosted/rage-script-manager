@@ -2,7 +2,7 @@
   "name": "rage-script-manager",
   "displayName": "RAGE Script Manager",
   "description": "VS Code client for the GTALua and RDR2Lua scripting hosts. Connect over TCP, push Lua files, run a buffer, stream the log and manage resources without restarting the host application.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "DominikHeise",
   "license": "MIT",
   "icon": "icon.png",
@@ -44,8 +44,8 @@
       "properties": {
         "rageScriptManager.host": {
           "type": "string",
-          "default": "10.10.10.235",
-          "description": "Console IP address or hostname."
+          "default": "",
+          "description": "Console IP address or hostname. There is no sensible default for someone else's network, so this starts empty and Connect will tell you to set it."
         },
         "rageScriptManager.port": {
           "type": "number",

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1
+
+- **The `host` setting no longer defaults to the author's own console.** It
+  shipped with `10.10.10.235` as its default, which is meaningless on anyone
+  else's network and failed as a connection timeout rather than as an
+  instruction. It now starts empty, and Connect says what to set.
+- Removed two README links to plugin repositories that do not exist publicly.
+  The requirement is stated in prose instead.
+
 ## 0.1.0
 
 First public release.

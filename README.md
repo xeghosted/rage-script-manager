@@ -12,8 +12,12 @@ on the console:
 
 | Game | Plugin | Port |
 | --- | --- | --- |
-| Grand Theft Auto V (CUSA00411 v1.57) | [GTALua](https://github.com/xeghosted/GTALua) | 9615 |
-| Red Dead Redemption 2 (CUSA03041 v1.32) | [RDR2Lua](https://github.com/xeghosted/RDR2Lua) | 9616 |
+| Grand Theft Auto V (CUSA00411 v1.57) | GTALua | 9615 |
+| Red Dead Redemption 2 (CUSA03041 v1.32) | RDR2Lua | 9616 |
+
+The plugins are a separate project from this extension and are not published
+yet, so there is nothing to link to.  Without one of them running on the
+console there is nothing for this extension to talk to.
 
 One extension serves both. It speaks the protocol and sends relative paths; the
 plugin resolves them under its own data root, so nothing here is game-specific
@@ -51,7 +55,7 @@ else goes to `scripts/` and reloads the script directory.
 
 | Setting | Default | |
 | --- | --- | --- |
-| `rageScriptManager.host` | `10.10.10.235` | Console IP or hostname |
+| `rageScriptManager.host` | *(empty)* | Console IP or hostname — you must set this |
 | `rageScriptManager.port` | `9615` | 9615 for GTALua, 9616 for RDR2Lua |
 | `rageScriptManager.token` | *(empty)* | Shared secret, if the console has a token file |
 

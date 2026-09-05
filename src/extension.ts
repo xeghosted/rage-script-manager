@@ -137,7 +137,15 @@ function reportReplyFailure(outcome: { kind: 'error'; text: string } | { kind: '
 async function connect(): Promise<Client> {
     if (client?.connected) { return client; }
     const cfg = vscode.workspace.getConfiguration('rageScriptManager');
-    const host = cfg.get<string>('host', '10.10.10.235');
+    // No default: this shipped with the author's own console address baked in
+    // as the default, which is meaningless on anybody else's network and fails
+    // as a connection timeout rather than as an instruction. Empty is honest,
+    // and the message below says exactly what to do about it.
+    const host = cfg.get<string>('host', '');
+    if (!host) {
+        throw new Error('rageScriptManager.host is not set - put the IP address of your console '
+                        + 'in it (Settings, or .vscode/settings.json in this workspace)');
+    }
     const port = cfg.get<number>('port', 9615);
     // Empty by default, which matches a console with no /data/<plugin>/token:
     // a HELLO with no payload is exactly what an unauthenticated channel
@@ -518,7 +526,12 @@ async function deployPlugin(): Promise<void> {
     const folder = vscode.workspace.workspaceFolders?.[0];
     if (!folder) { vscode.window.showWarningMessage('RAGE Script Manager: no folder is open'); return; }
     const cfg = vscode.workspace.getConfiguration('rageScriptManager');
-    const host = cfg.get<string>('host', '10.10.10.235');
+    const host = cfg.get<string>('host', '');
+    if (!host) {
+        vscode.window.showErrorMessage(
+            'RAGE Script Manager: set rageScriptManager.host to the IP address of your console first');
+        return;
+    }
 
     // The plugin is loaded at title launch only, so pushing it while the game
     // runs changes nothing until a restart. Saying so before the transfer is

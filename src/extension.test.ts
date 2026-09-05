@@ -63,7 +63,7 @@ function testIsEditorDefinitionFile(): void {
 }
 
 function testSafeConsoleHost(): void {
-    check(isSafeConsoleHost('10.10.10.235'), 'an IPv4 address is a usable host');
+    check(isSafeConsoleHost('192.0.2.10'), 'an IPv4 address is a usable host');
     check(isSafeConsoleHost('ps4.local'), 'and so is a hostname');
     check(isSafeConsoleHost('a'), 'and a single label');
 
