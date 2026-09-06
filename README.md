@@ -42,6 +42,7 @@ All under the `RAGE:` category in the Command Palette.
 
 | Command | Keybinding | What it does |
 | --- | --- | --- |
+| Menu | | Every command below, in one picker — this is what the status-bar item opens |
 | Connect / Disconnect | | Opens the control channel |
 | Push & Restart | `Ctrl+Alt+R` | Saves the active file, sends it, restarts what it belongs to |
 | Run Current File | `Ctrl+Alt+Enter` | Runs the buffer as a one-off, without saving or writing it to disk |

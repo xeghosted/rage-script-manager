@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Client } from './client';
 import { Op } from './protocol';
+import { buildMenu } from './menu';
 import { classifyReply, ReplyOutcome } from './replies';
 import { isEditorDefinitionFile, isSafeConsoleHost } from './paths';
 import { pushTargetFor, parseChunkError, PushTarget } from './locate';
@@ -553,12 +554,44 @@ async function deployPlugin(): Promise<void> {
         'RAGE Script Manager: deploying over FTP. The plugin only loads at title launch - restart the game.');
 }
 
+// Clicking the status bar used to open the log. That is one of a dozen things
+// you might want from it and not the most likely, so it now offers all of them
+// -- the same commands the palette has, without having to remember that they
+// are filed under "RAGE" or which keybinding does what.
+//
+// The list itself lives in menu.ts, which imports nothing from vscode so it can
+// be tested against package.json: a menu entry naming a command that is not
+// contributed does nothing at all when picked, and nothing else would catch it.
+async function showMenu(): Promise<void> {
+    const cfg = vscode.workspace.getConfiguration('rageScriptManager');
+    const entries = buildMenu({
+        connected: client?.connected === true,
+        host: cfg.get<string>('host') ?? '',
+        port: cfg.get<number>('port') ?? 9615,
+    });
+
+    type Item = vscode.QuickPickItem & { command?: string };
+    const items: Item[] = entries.map((e) => ({
+        label: e.label,
+        description: e.description,
+        kind: e.separator ? vscode.QuickPickItemKind.Separator : vscode.QuickPickItemKind.Default,
+        command: e.command,
+    }));
+
+    const picked = await vscode.window.showQuickPick(items, {
+        title: 'RAGE Script Manager',
+        placeHolder: 'Pick an action',
+        matchOnDescription: true,
+    });
+    if (picked?.command) { await vscode.commands.executeCommand(picked.command); }
+}
+
 export function activate(ctx: vscode.ExtensionContext) {
     output = vscode.window.createOutputChannel('RAGE Script Manager');
     diagnostics = vscode.languages.createDiagnosticCollection('rageScriptManager');
     ctx.subscriptions.push(diagnostics);
     status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    status.command = 'rageScriptManager.showLog';
+    status.command = 'rageScriptManager.showMenu';
     setStatus('disconnected', true);
 
     // Generic over its argument list so it can wrap both a plain () =>
@@ -582,6 +615,7 @@ export function activate(ctx: vscode.ExtensionContext) {
         vscode.commands.registerCommand('rageScriptManager.pushReload', wrap(pushReload)),
         vscode.commands.registerCommand('rageScriptManager.runFile', wrap(runFile)),
         vscode.commands.registerCommand('rageScriptManager.showLog', () => output.show()),
+        vscode.commands.registerCommand('rageScriptManager.showMenu', wrap(showMenu)),
         vscode.window.registerTreeDataProvider('rageScriptManagerResources', tree),
         vscode.commands.registerCommand('rageScriptManager.refreshResources', wrap(refreshResources)),
         vscode.commands.registerCommand('rageScriptManager.startResource',

@@ -6,7 +6,7 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
 
-const tests = ['protocol.test.js', 'client.test.js', 'reslist.test.js', 'extension.test.js', 'consoleinput.test.js', 'locate.test.js', 'scaffold.test.js'];
+const tests = ['protocol.test.js', 'client.test.js', 'reslist.test.js', 'extension.test.js', 'consoleinput.test.js', 'locate.test.js', 'scaffold.test.js', 'menu.test.js'];
 let failed = false;
 
 for (const t of tests) {

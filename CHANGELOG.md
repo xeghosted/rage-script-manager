@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5
+
+- **The status-bar item opens a menu.** Clicking it used to show the log, which
+  is one of a dozen things you might want from it and not the most likely. It
+  now offers all of them -- connect and disconnect, push, run, resources, the
+  console, the log, deploy -- so the commands are reachable without remembering
+  that they are filed under "RAGE" in the palette.
+
 ## 0.1.4
 
 - **The connection no longer drops on its own after about a minute.** The plugin
