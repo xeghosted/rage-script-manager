@@ -28,6 +28,26 @@ export function validateResourceName(name: string): string | undefined {
     return undefined;
 }
 
+/**
+ * The directives an fxmanifest may use, exactly as src/script/lua/manifest.lua
+ * accepts them.
+ *
+ * They are not Lua globals -- the plugin evaluates a manifest in a sandbox
+ * where each one is a function on the environment -- so without this the
+ * language server flags every line of a manifest it just scaffolded, which
+ * reads as the scaffold being wrong.
+ *
+ * Listed in the generated .luarc.json rather than shipped as a `---@meta`
+ * definitions file on purpose: a meta file defines globals across the whole
+ * workspace, and `name` or `version` undefined inside an ordinary script is a
+ * real mistake worth keeping.
+ */
+export const MANIFEST_DIRECTIVES = [
+    'author', 'client_script', 'client_scripts', 'dependencies', 'dependency',
+    'description', 'fx_version', 'game', 'games', 'name', 'script', 'scripts',
+    'server_script', 'server_scripts', 'shared_script', 'shared_scripts', 'version',
+];
+
 export interface ScaffoldFile {
     /** Workspace-relative, forward slashes, in creation order. */
     path: string;
@@ -108,6 +128,7 @@ export function scaffoldFiles(name: string, game: string = 'gta5'): ScaffoldFile
                 '$schema': 'https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json',
                 'runtime.version': 'Lua 5.4',
                 'workspace.library': [`../../editor/lua-defs/${game}`, '../../lua-defs'],
+                'diagnostics.globals': MANIFEST_DIRECTIVES,
                 'workspace.checkThirdParty': false,
             }, null, 2) + '\n',
         },

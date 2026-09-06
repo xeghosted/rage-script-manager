@@ -1,7 +1,7 @@
 // editor/src/scaffold.test.ts
 // Covers what "New Resource" writes. scaffold.ts imports no 'vscode' so this
 // plain-Node runner can load it; extension.ts does the asking and the writing.
-import { scaffoldFiles, gameForPort, validateResourceName } from './scaffold';
+import { scaffoldFiles, gameForPort, validateResourceName, MANIFEST_DIRECTIVES } from './scaffold';
 
 let failures = 0;
 function check(ok: boolean, what: string) {
@@ -55,6 +55,19 @@ function testFiles(): void {
         'the config points at THIS game\'s definitions, two levels up');
     check(luarc['workspace.library'].includes('../../lua-defs'),
         '  and at a New Project layout, which keeps them at the root');
+
+    // Every directive the scaffolded manifest actually uses must be one the
+    // config knows, or the resource is born with a warning on those lines.
+    const manifest = files.find((f) => f.path.endsWith('fxmanifest.lua'))!.body;
+    const used = manifest.split('\n')
+        .map((l) => /^([a-z_]+)\s/.exec(l.trim()))
+        .filter((m): m is RegExpExecArray => m !== null)
+        .map((m) => m[1]);
+    check(used.length > 0, 'the scaffolded manifest uses directives at all');
+    check(used.every((d) => luarc['diagnostics.globals'].includes(d)),
+        '  and the config declares every one it uses');
+    check(MANIFEST_DIRECTIVES.includes('client_script') && MANIFEST_DIRECTIVES.includes('fx_version'),
+        '  from the list the plugin parser accepts');
     check(luarc['runtime.version'] === 'Lua 5.4', 'and names the runtime the console runs');
 }
 

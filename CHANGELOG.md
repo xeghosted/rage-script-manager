@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7
+
+- A freshly scaffolded resource showed an undefined-global warning on every line
+  of the manifest the scaffold had just written. fxmanifest directives are not
+  Lua globals -- the plugin evaluates a manifest in a sandbox -- so the generated
+  `.luarc.json` now declares them.
+
 ## 0.1.6
 
 - **New Project.** Creates a workspace that is ready to push on the first try:
