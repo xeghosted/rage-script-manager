@@ -8,6 +8,8 @@ import * as path from 'path';
 import { Client } from './client';
 import { Op } from './protocol';
 import { buildMenu } from './menu';
+import { GAMES, DEFS_FILES, defsUrl, projectFiles, validateProjectName } from './project';
+import * as https from 'https';
 import { classifyReply, ReplyOutcome } from './replies';
 import { isEditorDefinitionFile, isSafeConsoleHost } from './paths';
 import { pushTargetFor, parseChunkError, PushTarget } from './locate';
@@ -586,6 +588,102 @@ async function showMenu(): Promise<void> {
     if (picked?.command) { await vscode.commands.executeCommand(picked.command); }
 }
 
+// --- New Project -----------------------------------------------------------
+
+// Fetch one file over https, following redirects. raw.githubusercontent.com
+// answers 200 directly today, but a CDN that starts answering 302 would
+// otherwise turn into an empty definitions file and silent autocomplete loss --
+// the exact failure this whole feature exists to prevent.
+function fetchText(url: string, redirectsLeft = 5): Promise<string> {
+    return new Promise((resolve, reject) => {
+        https.get(url, { headers: { 'User-Agent': 'rage-script-manager' } }, (res) => {
+            const code = res.statusCode ?? 0;
+            if (code >= 300 && code < 400 && res.headers.location) {
+                res.resume();
+                if (redirectsLeft <= 0) { reject(new Error(`too many redirects for ${url}`)); return; }
+                resolve(fetchText(new URL(res.headers.location, url).toString(), redirectsLeft - 1));
+                return;
+            }
+            if (code !== 200) {
+                res.resume();
+                reject(new Error(`${code} fetching ${url}`));
+                return;
+            }
+            const chunks: Buffer[] = [];
+            res.on('data', (c: Buffer) => chunks.push(c));
+            res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+        }).on('error', reject);
+    });
+}
+
+async function newProject(): Promise<void> {
+    const game = await vscode.window.showQuickPick(
+        GAMES.map((g) => ({ label: g.label, description: `${g.titleId} - port ${g.port}`, game: g })),
+        { title: 'New RAGE project', placeHolder: 'Which game?' });
+    if (!game) { return; }
+
+    const name = await vscode.window.showInputBox({
+        prompt: 'Project folder name',
+        placeHolder: game.game.id === 'gta5' ? 'gtav-scripts' : 'rdr2-scripts',
+        validateInput: validateProjectName,
+    });
+    if (!name) { return; }
+
+    const parent = await vscode.window.showOpenDialog({
+        canSelectFolders: true, canSelectFiles: false, canSelectMany: false,
+        openLabel: 'Create here', title: 'Where should the project go?',
+    });
+    if (!parent || parent.length === 0) { return; }
+
+    const dir = vscode.Uri.joinPath(parent[0], name);
+    // Refuse rather than merge, the same rule New Resource follows: writing
+    // into somebody's existing folder because the name collided is not
+    // recoverable from inside the editor.
+    try {
+        await vscode.workspace.fs.stat(dir);
+        vscode.window.showErrorMessage(`RAGE Script Manager: ${name} already exists there`);
+        return;
+    } catch {
+        // Does not exist, which is the case we want.
+    }
+
+    const host = vscode.workspace.getConfiguration('rageScriptManager').get<string>('host', '');
+    for (const f of projectFiles(game.game, host)) {
+        await vscode.workspace.fs.writeFile(
+            vscode.Uri.joinPath(dir, ...f.path.split('/')), Buffer.from(f.body, 'utf8'));
+    }
+
+    // The definitions are the slow part and the part that can fail. Fetch them
+    // with the project already on disk, so a download that fails leaves a
+    // working project missing only autocomplete -- and says so -- rather than
+    // leaving nothing at all.
+    let fetched = 0;
+    await vscode.window.withProgress(
+        { location: vscode.ProgressLocation.Notification, title: `Fetching ${game.game.label} definitions` },
+        async (progress) => {
+            for (const file of DEFS_FILES) {
+                progress.report({ message: file });
+                try {
+                    const body = await fetchText(defsUrl(game.game.id, file));
+                    await vscode.workspace.fs.writeFile(
+                        vscode.Uri.joinPath(dir, 'lua-defs', file), Buffer.from(body, 'utf8'));
+                    fetched++;
+                } catch (e: any) {
+                    output.appendLine(`[newProject] ${file}: ${e?.message ?? e}`);
+                }
+            }
+        });
+
+    if (fetched < DEFS_FILES.length) {
+        vscode.window.showWarningMessage(
+            'RAGE Script Manager: the project was created, but the native definitions could not be ' +
+            'downloaded, so autocomplete will be missing. Copy editor/lua-defs/' + game.game.id +
+            '/ from the Luma repository into lua-defs/ to fix it. See the log for why.');
+    }
+
+    await vscode.commands.executeCommand('vscode.openFolder', dir, { forceNewWindow: true });
+}
+
 export function activate(ctx: vscode.ExtensionContext) {
     output = vscode.window.createOutputChannel('RAGE Script Manager');
     diagnostics = vscode.languages.createDiagnosticCollection('rageScriptManager');
@@ -625,6 +723,7 @@ export function activate(ctx: vscode.ExtensionContext) {
         vscode.commands.registerCommand('rageScriptManager.restartResource',
             wrap((i?: ResourceNode) => lifecycle(Op.Restart, i, 'restart'))),
         vscode.commands.registerCommand('rageScriptManager.newResource', wrap(newResource)),
+        vscode.commands.registerCommand('rageScriptManager.newProject', wrap(newProject)),
         vscode.commands.registerCommand('rageScriptManager.deployPlugin', wrap(deployPlugin)),
         vscode.commands.registerCommand('rageScriptManager.openConsole', () => {
             const pty = createConsole(() => connect());

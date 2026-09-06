@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.6
+
+- **New Project.** Creates a workspace that is ready to push on the first try:
+  scripts, resources, `autostart.cfg`, the host and port already set for the
+  game you picked, and the native definitions fetched from the plugin's public
+  repository into `lua-defs/`. Those definitions are ~700 KB per game and belong
+  to the plugin project, so they are not bundled here — without them autocomplete
+  is silently absent, which reads as this extension being broken.
+- The resource scaffold pointed `.luarc.json` at `../../editor/lua-defs`, which
+  stopped existing when the plugin split its definitions per game.
+
 ## 0.1.5
 
 - **The status-bar item opens a menu.** Clicking it used to show the log, which

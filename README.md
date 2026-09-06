@@ -48,6 +48,7 @@ All under the `RAGE:` category in the Command Palette.
 | Run Current File | `Ctrl+Alt+Enter` | Runs the buffer as a one-off, without saving or writing it to disk |
 | Open Console | | A terminal that evaluates Lua on the console; `=expr` prints a value |
 | Show Log | | The plugin's log, streamed live |
+| New Project | | Creates a whole workspace for one game — scripts, resources, host and port, and the native definitions fetched from the plugin repo |
 | New Resource | | Scaffolds a working resource — manifest, client script, `.luarc.json` |
 | Start / Stop / Restart Resource | | From the palette or the Resources view |
 | Refresh Resources | | Re-reads the resource list |

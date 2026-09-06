@@ -93,13 +93,21 @@ export function scaffoldFiles(name: string, game: string = 'gta5'): ScaffoldFile
         {
             path: `${dir}/.luarc.json`,
             // Relative to the resource directory, which sits two levels under
-            // the repo root. Without it the 6,485 native completions do not
+            // the workspace root. Without it the native completions do not
             // reach a freshly made resource, and it reads as autocomplete
             // being broken rather than as a missing config.
+            //
+            // The GAME is part of the path. It did not used to be, and when the
+            // plugin split its definitions per game that path stopped existing,
+            // so every scaffolded resource pointed at nothing -- silently, which
+            // is the only way a missing definitions path ever fails. Naming the
+            // game also stops an RDR2 resource being checked against Grand
+            // Theft Auto's natives. The second entry covers a workspace made by
+            // New Project, which keeps its definitions in lua-defs/ at the root.
             body: JSON.stringify({
                 '$schema': 'https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json',
                 'runtime.version': 'Lua 5.4',
-                'workspace.library': ['../../editor/lua-defs'],
+                'workspace.library': [`../../editor/lua-defs/${game}`, '../../lua-defs'],
                 'workspace.checkThirdParty': false,
             }, null, 2) + '\n',
         },

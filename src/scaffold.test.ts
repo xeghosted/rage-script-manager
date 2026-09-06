@@ -46,8 +46,15 @@ function testFiles(): void {
     check(files[1].body.includes("RegisterCommand('demo'"), 'and registers a command named after the resource');
 
     const luarc = JSON.parse(files[2].body);
-    check(luarc['workspace.library'][0] === '../../editor/lua-defs',
-        'the config points at the native definitions, two levels up');
+    // The game is part of the path. Without it this pointed at
+    // editor/lua-defs, which stopped existing when the plugin split its
+    // definitions per game -- and a .luarc.json naming a directory that is not
+    // there fails the only way this can fail: silently, as missing
+    // autocomplete.
+    check(luarc['workspace.library'][0] === '../../editor/lua-defs/gta5',
+        'the config points at THIS game\'s definitions, two levels up');
+    check(luarc['workspace.library'].includes('../../lua-defs'),
+        '  and at a New Project layout, which keeps them at the root');
     check(luarc['runtime.version'] === 'Lua 5.4', 'and names the runtime the console runs');
 }
 
@@ -69,3 +76,10 @@ function testGameDirective(): void {
 testValidation();
 testFiles();
 testGameDirective();
+
+// This was missing, and its absence made the whole file decorative: every check
+// above printed FAIL and the process still exited 0, so run-tests.js reported a
+// clean run over a failing suite. A gate that cannot fail is worse than no gate,
+// because it is counted.
+console.log(`\n${failures ? 'FAILED' : 'PASSED'} (${failures} failures)`);
+process.exit(failures ? 1 : 0);

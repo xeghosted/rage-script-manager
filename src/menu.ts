@@ -48,6 +48,7 @@ export function buildMenu(s: MenuState): MenuEntry[] {
         { label: '$(cloud-upload) Push & Restart', description: 'Ctrl+Alt+R', command: 'rageScriptManager.pushReload' },
         { label: '$(play) Run Current File', description: 'Ctrl+Alt+Enter', command: 'rageScriptManager.runFile' },
         { label: '$(new-folder) New Resource', command: 'rageScriptManager.newResource' },
+        { label: '$(folder-library) New Project', description: 'a fresh workspace, definitions and all', command: 'rageScriptManager.newProject' },
 
         sep('Resources'),
         { label: '$(debug-start) Start Resource', command: 'rageScriptManager.startResource' },
