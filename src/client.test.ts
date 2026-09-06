@@ -218,12 +218,44 @@ async function testMalformedFrameDisconnects(): Promise<void> {
     });
 }
 
+
+// The console closes a connection after 30 s with no traffic in either
+// direction, so an idle editor session used to die on its own. The client now
+// pings; this asserts the pings actually reach the wire, and stop when the
+// connection does. Constructed with a 30 ms interval so the suite does not
+// have to wait out a real one.
+async function testKeepalivePings(): Promise<void> {
+    await withServer(async (server, port) => {
+        const client = new Client(30);
+        let pings = 0;
+        server.on('connection', (sock) => {
+            sock.on('data', (d) => {
+                for (let off = 0; off + HEADER_SIZE <= d.length;) {
+                    const h = decodeHeader(d.subarray(off));
+                    if (!h) { break; }
+                    if (h.op === Op.Ping) { pings++; }
+                    off += HEADER_SIZE + h.len;
+                }
+            });
+        });
+        await client.connect('127.0.0.1', port);
+        check(await waitUntil(() => pings >= 3, 2000),
+              'sends a keepalive ping on its own, repeatedly, while idle');
+
+        client.disconnect();
+        const after = pings;
+        await sleep(150);
+        check(pings === after, '  and stops pinging once disconnected');
+    });
+}
+
 async function main(): Promise<void> {
     await testSplitFrame();
     await testCoalescedFrames();
     await testSplitHeaderFromBody();
     await testStaleReplyIgnored();
     await testTimeoutClearsPending();
+    await testKeepalivePings();
     await testDisconnectSettlesInFlightRequest();
     await testMalformedFrameDisconnects();
 

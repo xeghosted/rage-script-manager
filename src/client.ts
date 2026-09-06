@@ -26,6 +26,16 @@ export class Client extends EventEmitter {
     // through every server-side handler.
     private seq = 1 + Math.floor(Math.random() * 0xffff);
     private pending = new Map<number, (r: Reply) => void>();
+    private keepalive: NodeJS.Timeout | null = null;
+
+    // The plugin closes a connection after 30 s with no traffic in EITHER
+    // direction (IDLE_US in src/net/net_server.cpp). Nothing in this client
+    // used to send anything while idle, so a session survived only as long as
+    // scripts happened to emit log lines -- which is why it dropped after
+    // roughly a minute, unpredictably, and always looked like a network fault
+    // rather than a timeout. 10 s means two pings can be lost before the
+    // server's window closes.
+    constructor(private readonly keepaliveMs = 10_000) { super(); }
 
     get connected(): boolean { return this.sock !== null; }
 
@@ -39,6 +49,7 @@ export class Client extends EventEmitter {
                 s.on('data', (d) => this.onData(d));
                 s.on('close', () => { this.teardown(); this.emit('state', false); });
                 s.on('error', () => { /* surfaced via close */ });
+                this.startKeepalive();
                 this.emit('state', true);
                 resolve();
             });
@@ -50,7 +61,22 @@ export class Client extends EventEmitter {
         this.teardown();
     }
 
+    private startKeepalive(): void {
+        this.keepalive = setInterval(() => {
+            if (!this.sock) { return; }
+            // Fire and forget: request() deletes its own pending entry on
+            // timeout, so a lost PONG leaks nothing. A genuinely dead socket
+            // already surfaces through 'close', so a failed ping is not
+            // treated as fatal here -- tearing the session down on one missed
+            // reply would reintroduce the disconnect this exists to prevent.
+            this.request(Op.Ping, undefined, this.keepaliveMs).catch(() => { /* see above */ });
+        }, this.keepaliveMs);
+        // Never let a stray interval hold the extension host open.
+        this.keepalive.unref?.();
+    }
+
     private teardown(): void {
+        if (this.keepalive) { clearInterval(this.keepalive); this.keepalive = null; }
         this.sock = null;
         this.buf = Buffer.alloc(0);
         for (const [, resolve] of this.pending) {

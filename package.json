@@ -2,7 +2,7 @@
   "name": "rage-script-manager",
   "displayName": "RAGE Script Manager",
   "description": "VS Code client for the Luma scripting host. Connect over TCP, push Lua files, run a buffer, stream the log and manage resources without restarting the host application.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "DominikHeise",
   "license": "MIT",
   "icon": "icon.png",

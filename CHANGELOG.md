@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.4
+
+- **The connection no longer drops on its own after about a minute.** The plugin
+  closes a session after 30 seconds with no traffic in either direction, and this
+  extension sent nothing while idle -- so a session survived only as long as
+  scripts happened to emit log lines. That is why it looked intermittent, why it
+  never quite matched 30 seconds, and why it read as a network fault rather than
+  a timeout. The client now sends a keepalive ping every 10 seconds, which is
+  what the protocol's PING opcode was always for; two can be lost before the
+  console's window closes.
+
 ## 0.1.3
 
 Documentation only; no behaviour changed.
